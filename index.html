@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .btn{
+            padding: 12px;
+            background-color: gray;
+
+        }
+    </style>
+</head>
+<body>
+    
+      <div id="btn-container" class="w-[95%] md:w-[80%] flex justify-around mx-auto">
+
+      </div>
+      <div id="card_container" class="w-[82%] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      
+      </div>
+    <script>
+         const getApi=() =>{
+             fetch('https://openapi.programming-hero.com/api/videos/categories')
+             .then(res=>res.json())
+             .then(data => start(data))
+             .catch(error => console.error('Error fetching API:', error));
+         }
+         function start(data){
+            const arr=data.data;
+           // console.log(arr);
+            const allBtn=document.getElementById('btn-container');
+            arr.forEach(item => {
+             //   console.log(item);
+                const btn=document.createElement('button');
+                btn.classList.add('btn');
+                btn.innerText=item.category
+                allBtn.appendChild(btn);
+              
+                btn.addEventListener('click', () => displayData(`${item.category_id}`));
+            });
+         }
+         getApi();
+         function displayData(id){
+              
+              fetch(`https://openapi.programming-hero.com/api/videos/category/${id}`)
+              .then(res=>res.json())
+              .then(data=>{
+                 const arr=data.data;
+                 const cardContainer=document.getElementById('card_container');
+                 cardContainer.innerHTML=``;
+                 arr.forEach(item => {
+                    console.log(item);
+                       const card=document.createElement('div');
+                       card.innerHTML=`
+                       
+                  <div class="card w-96 bg-base-100 shadow-xl">
+                     <figure><img src="${item.thumbnail}" alt="Shoes" /></figure>
+                      <div class="card-body">
+                        <h2 class="card-title">Shoes!</h2>
+                          <p>If a dog chews shoes whose shoes does he choose?</p>
+                       <div class="card-actions justify-end">
+                         <button class="btn btn-primary">Buy Now
+                            </button>
+                      </div>
+                    </div>
+                 </div>
+                              
+                       `;
+                  cardContainer.appendChild(card);
+                 });
+                
+              })
+         }
+    </script>
+</body>
+</html>
