@@ -7,10 +7,10 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .btn{
+        .btn4{
             padding: 12px;
             background-color: gray;
-
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -19,7 +19,11 @@
       <div id="btn-container" class="w-[95%] md:w-[80%] flex justify-around mx-auto">
              <img src="" alt="">
       </div>
-      <div id="card_container" class="w-[94%] md:w-[82%] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+
+       <div id="spin" class="hidden my-20 text-center">
+           <span class="loading loading-spinner loading-lg"></span>
+       </div>
+      <div id="card_container" class="w-[94%] md:w-[82%] mx-auto grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       
       </div>
     <script>
@@ -36,16 +40,28 @@
             arr.forEach(item => {
              //   console.log(item);
                 const btn=document.createElement('button');
-                btn.classList.add('btn');
+                btn.classList.add('btn4');
+                btn.classList.add('bton');
                 btn.innerText=item.category
                 allBtn.appendChild(btn);
               
-                btn.addEventListener('click', () => displayData(`${item.category_id}`));
+                btn.addEventListener('click', () =>{ displayData(`${item.category_id}`)
+                        const spiner=document.getElementById('spin')
+                        spiner.classList.remove('hidden');
+                        const all_btn=document.getElementsByClassName('bton');
+                        for(const btn1 of all_btn){
+                            btn1.classList.remove('bg-red-500')
+                        }
+                        btn.classList.add('bg-red-500')
+                    }   
+                 );
+                
+
             });
          }
          getApi();
          function displayData(id){
-              
+               
               fetch(`https://openapi.programming-hero.com/api/videos/category/${id}`)
               .then(res=>res.json())
               .then(data=>{
@@ -74,6 +90,8 @@
                  </div>
                               
                        `;
+                 const spiner=document.getElementById('spin');
+                 spiner.classList.add('hidden');
                   cardContainer.appendChild(card);
                  });
                 
