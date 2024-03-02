@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,71 +8,123 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .btn4{
+        .btn4 {
             padding: 12px;
             background-color: gray;
             border-radius: 10px;
+            padding-left: 16px;
+            padding-right: 16px;
         }
     </style>
 </head>
-<body>
-     
-      <div id="btn-container" class="w-[95%] md:w-[80%] flex justify-around mx-auto">
-             <img src="" alt="">
-      </div>
 
-       <div id="spin" class="hidden my-20 text-center">
-           <span class="loading loading-spinner loading-lg"></span>
-       </div>
-      <div id="card_container" class="w-[94%] md:w-[82%] mx-auto grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-      
-      </div>
+<body>
+    <div class="flex justify-center">
+        <button onclick="" id="sort" class="bg-green-300 shadow-xl border-2 
+          border-black rounded-lg my-10 px-4 py-2 text-xl">
+            Sort by veiw</button>
+    </div>
+    <div id="btn-container" class="w-[95%] md:w-[80%] flex justify-around mx-auto">
+        <img src="" alt="">
+    </div>
+
+    <div id="spin" class="hidden my-20 text-center">
+        <span class="loading loading-spinner loading-lg"></span>
+    </div>
+    <div id="card_container" class="w-[94%] md:w-[82%] mx-auto grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+
+    </div>
+    <div class="hidden" id="oops">
+        <img src="images.png" alt="" srcset="" class="text-center w-[330px] h-[330] mx-auto">
+        <h1 class="text-4xl font-semibold text-center">OOPs!There no vedios upload yet. Try letter</h1>
+    </div>
+
     <script>
-         const getApi=() =>{
-             fetch('https://openapi.programming-hero.com/api/videos/categories')
-             .then(res=>res.json())
-             .then(data => start(data))
-             .catch(error => console.error('Error fetching API:', error));
-         }
-         function start(data){
-            const arr=data.data;
-           // console.log(arr);
-            const allBtn=document.getElementById('btn-container');
+        let sortByveiw = false;
+        const sort = document.getElementById('sort');
+        sort.addEventListener('click', () => {
+            sortByveiw = true;
+            displayData('1000', true)
+        })
+        const getApi = () => {
+            fetch('https://openapi.programming-hero.com/api/videos/categories')
+                .then(res => res.json())
+                .then(data => start(data))
+                .catch(error => console.error('Error fetching API:', error));
+        }
+        function start(data) {
+            const arr = data.data;
+            // console.log(arr);
+            const allBtn = document.getElementById('btn-container');
             arr.forEach(item => {
-             //   console.log(item);
-                const btn=document.createElement('button');
+                //   console.log(item);
+                const btn = document.createElement('button');
                 btn.classList.add('btn4');
                 btn.classList.add('bton');
-                btn.innerText=item.category
+                btn.innerText = item.category
                 allBtn.appendChild(btn);
-              
-                btn.addEventListener('click', () =>{ displayData(`${item.category_id}`)
-                        const spiner=document.getElementById('spin')
-                        spiner.classList.remove('hidden');
-                        const all_btn=document.getElementsByClassName('bton');
-                        for(const btn1 of all_btn){
-                            btn1.classList.remove('bg-red-500')
-                        }
-                        btn.classList.add('bg-red-500')
-                    }   
-                 );
-                
+
+                btn.addEventListener('click', () => {
+
+                    displayData(`${item.category_id}`, sortByveiw)
+
+                    const spiner = document.getElementById('spin')
+                    spiner.classList.remove('hidden');
+                    const all_btn = document.getElementsByClassName('bton');
+                    for (const btn1 of all_btn) {
+                        btn1.classList.remove('bg-red-500')
+                    }
+                    btn.classList.add('bg-red-500')
+                }
+                );
 
             });
-         }
-         getApi();
-         function displayData(id){
-               
-              fetch(`https://openapi.programming-hero.com/api/videos/category/${id}`)
-              .then(res=>res.json())
-              .then(data=>{
-                 const arr=data.data;
-                 const cardContainer=document.getElementById('card_container');
-                 cardContainer.innerHTML=``;
-                 arr.forEach(item => {
-                    console.log(item);
-                       const card=document.createElement('div');
-                       card.innerHTML=`
+        }
+        let id2 = 1000;
+        displayData(id2, sortByveiw);
+        getApi();
+        function displayData(id, sortByveiw) {
+
+            fetch(`https://openapi.programming-hero.com/api/videos/category/${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                    const arr = data?.data;
+
+
+                    if (sortByveiw) {
+                        arr.sort((a, b) => {
+
+
+                            const first = a?.others?.views;
+                            const second = b?.others?.views;
+                            // const firstInt = parseInt(first?.replace("K", '')) || 0;
+                            // const secondInt = parseInt(second?.replace("K", '')) || 0;
+                     
+                           console.log(a);
+                            return parseInt(second) -parseInt(first);
+                        });
+
+                        console.log(arr);
+                    }
+
+                    const cardContainer = document.getElementById('card_container');
+                    cardContainer.innerHTML = ``;
+                    if (arr.length == 0) {
+                        const OOps = document.getElementById('oops');
+                        const spinn = document.getElementById('spin');
+                        spinn.classList.add('hidden');
+                        OOps.classList.remove('hidden');
+                    }
+                    else {
+                        const OOps = document.getElementById('oops');
+                        OOps.classList.add('hidden');
+                    }
+                    arr?.forEach(item => {
+                        // console.log(item);
+
+                        const card = document.createElement('div');
+                        card.innerHTML = `
                        
                   <div class="card w-96 bg-base-100 shadow-xl">
                      <figure><img src="${item.thumbnail}" alt="Shoes" class="w-[330px] h-[300px]"></figure>
@@ -90,13 +143,20 @@
                  </div>
                               
                        `;
-                 const spiner=document.getElementById('spin');
-                 spiner.classList.add('hidden');
-                  cardContainer.appendChild(card);
-                 });
-                
-              })
-         }
+                        const spiner = document.getElementById('spin');
+                        spiner.classList.add('hidden');
+                        cardContainer.appendChild(card);
+
+                    });
+
+
+
+                })
+
+
+
+        }
     </script>
 </body>
+
 </html>
